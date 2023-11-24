@@ -3,6 +3,7 @@
 # containing the note transitions and their frequencies.
 
 from markov_chain import MarkovChain
+import os
 
 import random
 import mido
@@ -40,17 +41,20 @@ class Generator:
 
 if __name__ == "__main__":
     import sys
-    if len(sys.argv) >= 3:
-        # Example usage:
-        # python generator.py <in1.mid> <in2.mid> ... <out.mid>
-        from parser import Parser
 
-        # Load multiple markov chains from input MIDI files
-        chains = [Parser(file).get_chain() for file in sys.argv[1:-1]]
+    midi_folder = "midi"  # Folder containing MIDI files
+
+    from parser import Parser
+    if len(sys.argv) == 2:
+        output_file = sys.argv[1]
+
+        # Load multiple markov chains from all MIDI files in the specified folder
+        chains = [Parser(os.path.join(midi_folder, file)).get_chain() for file in os.listdir(midi_folder) if file.endswith(".mid")]
 
         # Generate a new song using the provided markov chains
-        Generator.load(chains).generate(sys.argv[-1])
+        Generator.load(chains).generate(output_file)
         print('Generated markov chain')
     else:
         print('Invalid number of arguments:')
-        print('Example usage: python generator.py <in1.mid> <in2.mid> ... <out.mid>')
+        print('Example usage: python generator.py <out.mid>')
+
