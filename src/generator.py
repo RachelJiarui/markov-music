@@ -39,6 +39,12 @@ class Generator:
             midi.tracks.append(track)
             midi.save(filename)
 
+    def print_transition_matrices(self):
+        for idx, chain in enumerate(self.markov_chains):
+            print(f"Transition Matrix for Markov Chain {idx + 1}:")
+            chain.print_as_matrix()
+            print()
+
 if __name__ == "__main__":
     import sys
 
@@ -52,9 +58,13 @@ if __name__ == "__main__":
         chains = [Parser(os.path.join(midi_folder, file)).get_chain() for file in os.listdir(midi_folder) if file.endswith(".mid")]
 
         # Generate a new song using the provided markov chains
-        Generator.load(chains).generate(output_file)
-        print('Generated markov chain')
+        generator = Generator.load(chains)
+        generator.generate(output_file)
+
+        # Print transition matrices
+        generator.print_transition_matrices()
+        
+        print('Generated markov chain and printed transition matrices.')
     else:
         print('Invalid number of arguments:')
         print('Example usage: python generator.py <out.mid>')
-
